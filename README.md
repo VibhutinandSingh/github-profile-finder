@@ -48,7 +48,7 @@ While building this project, I learned:
 
 ## Preview
 
-![GitHub Profile Finder Preview](github-profile-finder-preview.png)
+![GitHub Profile Finder Preview](.assets/github-profile-finder-preview.png)
 
 ---
 
