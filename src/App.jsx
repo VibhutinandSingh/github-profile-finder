@@ -4,21 +4,35 @@ function App() {
   const [username, setUsername] = useState("")
   const [user, setUser] = useState(null)
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   async function handleSearch(e) {
     e.preventDefault() // prevents the page from  refreshing
     setUser(null)
     setError("")
-    const response = await fetch(
-      `https://api.github.com/users/${username}` // fetch the user
-    )
-    if (!response.ok) {
-      setUser(null)
-      setError("User not found!")
-      return
+    setLoading(true)
+
+    try{
+
+      const response = await fetch(
+        `https://api.github.com/users/${username.trim()}` // fetch the user
+      )
+      if (!response.ok) {
+        setUser(null)
+        setError("User not found!")
+        return
+      }
+      const data = await response.json(); // convert the response to json
+      setUser(data) // store it in state
     }
-    const data = await response.json(); // convert the response to json
-    setUser(data) // store it in state
+    catch(error){
+      console.error(error);
+      setUser(null);
+      setError("Network error. Please try again");
+    }
+    finally{
+      setLoading(false)
+    }
 
   }
 
@@ -35,14 +49,16 @@ function App() {
               value={username}
               placeholder='username'
               onChange={(e) => setUsername(e.target.value)}
+              disabled={loading}
               className='bg-gray-300 outline-none p-3 rounded-l-3xl w-2/6 ' />
-
             <button
               className='bg-slate-500 p-3 rounded-r-3xl text-white disabled:opacity-50 disabled:cursor-not-allowed enabled:hover:bg-slate-600'
               type="submit"
-              disabled={!username.trim()}
+              disabled={!username.trim() || loading}
               title={!username.trim() ? "Enter a username first" : "Search"}
-            >Search</button>
+            >
+              {loading ? "🔄 Searching..." : "Search"}
+            </button>
           </form>
           <div className='text-white text-3xl text-center'>
             {error}
@@ -57,7 +73,7 @@ function App() {
                 {user.login}
               </h2>
               <h2 className=' text-2xl bg-slate-500 w-fit py-3 px-8 rounded-4xl text-center text-white'>
-                {user.name}
+                {user.name || "no username available"}
               </h2>
               <p className=' text-2xl bg-slate-700 w-fit py-3 px-8 rounded-4xl text-center text-white'>
                 {user.bio || "no bio available"}
