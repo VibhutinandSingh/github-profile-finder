@@ -20,7 +20,7 @@ function App() {
 
   useEffect(() => {
     focusInputField()
-    setUsername(localStorage.getItem("previousUsername"))
+    setUsername(localStorage.getItem("previousUsername") || "")
   }, [])
 
   async function handleSearch(e) {
